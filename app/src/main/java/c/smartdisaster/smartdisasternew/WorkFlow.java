@@ -1,28 +1,30 @@
 package c.smartdisaster.smartdisasternew;
 
 
-import android.graphics.Color;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.telecom.Call;
-import android.view.Gravity;
-import android.view.Window;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 
-
 public class WorkFlow extends AppCompatActivity {
+
+
+    DisasterNetwork network;
+    CPU localCenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        network = new DisasterNetwork ();
+        localCenter = network.localCenter;
         setContentView(R.layout.activity_work_flow);
 
         //go back to infrastructure status
@@ -84,6 +86,5 @@ public class WorkFlow extends AppCompatActivity {
             tbrow.addView(t4v);
             stk.addView(tbrow);
         }
-
     }
 }
