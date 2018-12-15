@@ -17,7 +17,7 @@ public class DisasterNetwork {
     // Network Variables
     public PriorityQueue<Job> jobPool; // job pool for network transfers | sorted by priority
     //public ArrayList<Device> deviceList;
-    //public PriorityQueue<Channel> channelPool;
+    public PriorityQueue<Connection> channelPool;
     DisasterNetwork () {
         paused = false;
         completedJobs = new ArrayList<Job>();
