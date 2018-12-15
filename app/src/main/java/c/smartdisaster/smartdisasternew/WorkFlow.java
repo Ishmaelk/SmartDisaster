@@ -15,16 +15,18 @@ import android.widget.TextView;
 
 public class WorkFlow extends AppCompatActivity {
 
-
     DisasterNetwork network;
     CPU localCenter;
+    RemoteCenter remoteCenter;
 
-
+    android.os.Handler handler;
+    Runnable runnable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         network = new DisasterNetwork ();
         localCenter = network.localCenter;
+        remoteCenter = network.remoteCenter;
         setContentView(R.layout.activity_work_flow);
 
         //go back to infrastructure status
@@ -40,6 +42,31 @@ public class WorkFlow extends AppCompatActivity {
         init();
 
     }
+
+
+
+    @Override
+    protected void onResume() { // Handles events that occur once every second
+        network.paused = false;
+        handler.postDelayed( runnable = new Runnable() {
+            public void run() {
+                network.elapsedTime += 1;
+                // Enter Network Events here //
+                localCenter.Compute();
+                remoteCenter.Compute();
+                handler.postDelayed(runnable, 1000);
+            }
+        }, 1000);
+        super.onResume();
+    }
+
+    @Override // pauses the ticker when activity is not visible
+    protected void onPause() {
+        network.paused = true;
+        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
+    }
+
 
     public void init() {
         TableLayout stk = (TableLayout) findViewById(R.id.table_main);

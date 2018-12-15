@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 public class DisasterNetwork {
-    boolean paused; // if we have paused passage of time
+
+    // General variables //
+    public boolean paused; // if we have paused passage of time
+    public double elapsedTime; // time we have spent unpaused //
 
     // Compute Variables
     public ArrayList<Job> completedJobs;
     CPU localCenter;
-
+    RemoteCenter remoteCenter;
 
     // Network Variables
     public PriorityQueue<Job> jobPool; // job pool for network transfers | sorted by priority
