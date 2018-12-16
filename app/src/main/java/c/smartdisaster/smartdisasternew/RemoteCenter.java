@@ -6,6 +6,10 @@ public class RemoteCenter extends CPU {
         minPower = -1;
     }
 
+    public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
+        jobList.add(j);
+    }
+
     // Exactly like CPU Compute, but does not divide compute power among number of jobs //
     public void Compute () {
         if (jobList.size() == 0) return;

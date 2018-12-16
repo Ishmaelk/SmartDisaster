@@ -27,6 +27,7 @@ public class WorkFlow extends AppCompatActivity {
         network = new DisasterNetwork ();
         localCenter = network.localCenter;
         remoteCenter = network.remoteCenter;
+        localCenter.remoteCenter = remoteCenter;
         setContentView(R.layout.activity_work_flow);
 
         //go back to infrastructure status
@@ -40,7 +41,6 @@ public class WorkFlow extends AppCompatActivity {
             }
         });
         init();
-
     }
 
 
@@ -50,7 +50,9 @@ public class WorkFlow extends AppCompatActivity {
         network.paused = false;
         handler.postDelayed( runnable = new Runnable() {
             public void run() {
-                network.elapsedTime += 1;
+                network.elapsedTime++;
+                network.TransferJobs();
+                //network
                 // Enter Network Events here //
                 localCenter.Compute();
                 remoteCenter.Compute();
