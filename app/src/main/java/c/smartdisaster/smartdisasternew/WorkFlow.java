@@ -52,6 +52,7 @@ public class WorkFlow extends AppCompatActivity {
     @Override
     protected void onResume() { // Handles events that occur once every second
         network.paused = false;
+        final int delay = 1000;
         handler.postDelayed( runnable = new Runnable() {
             public void run() {
                 network.elapsedTime++;
@@ -64,10 +65,13 @@ public class WorkFlow extends AppCompatActivity {
                 localCenter.Compute();
                 remoteCenter.Compute();
 
+                network.IncrementTime(delay/1000);
+
                 //System.out.println("\n Printing jobs \n");
                 //network.PrintJobs();
                 //System.out.println("\n Printing Channels \n");
                 //network.PrintChannels();
+                System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
                 System.out.println("\n Printing Transfers \n");
                 network.PrintTransferring();
                 System.out.println("\n Printing Compute \n");
@@ -78,10 +82,10 @@ public class WorkFlow extends AppCompatActivity {
                 network.PrintRemoteCompute();
 
 
-                handler.postDelayed(runnable, 1000);
+                handler.postDelayed(runnable, delay);
 
             }
-        }, 1000);
+        }, delay);
         super.onResume();
     }
 

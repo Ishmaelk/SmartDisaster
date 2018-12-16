@@ -42,12 +42,13 @@ public class CPU {
     }
 
     public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
-        System.out.println("computePerJob: " + (float) power / jobList.size());
-        if ( (float) power / jobList.size() < minPower) {
+        if ( GetComputePerJob() < minPower) {
             j.state = "Transferring";
+            j.location = "Remote Channel";
             j.channel = remoteConnection;
             transferringJobs.add(j);
         } else {
+            j.location = "Local Center";
             j.state = "Computing";
             jobList.add(j);
         }
@@ -82,6 +83,14 @@ public class CPU {
         }
     }
 
+    float GetComputePerJob () {
+        float computePerJob = (float) power / jobList.size();
+        return computePerJob;
+    }
 
+    public float GetUsage () {
+        float usage = GetComputePerJob() * jobList.size() / power * 100;
+        return usage;
+    }
 
 }

@@ -65,6 +65,7 @@ public class DisasterNetwork {
             Random rand = new Random();
             int deviceID = rand.nextInt(100) % deviceList.size();
             Job j = deviceList.get(deviceID).CreateJob(jobId++);
+            j.location = "Job Queue";
             allJobs.add(j);
             jobPool.offer(j);
         }
@@ -77,6 +78,7 @@ public class DisasterNetwork {
             Channel c = channelPool.poll();
             j.channel = c;
             j.state = "Transferring";
+            j.location = "Channel" + c.id;
             jobsTransferring.add(j);
         }
     }
@@ -95,6 +97,55 @@ public class DisasterNetwork {
         }
     }
 
+
+    void IncrementTime (int interval) {
+        IncrementQueueTime(interval);
+        IncrementCPUTime(interval);
+        IncrementTransferTime(interval);
+    }
+
+    void IncrementQueueTime (int interval) {
+        if (jobPool.size() == 0)
+            return;
+        ArrayList<Job> jobs = new ArrayList<Job>();
+        while (!jobPool.isEmpty()) {
+            Job j = jobPool.poll();
+            j.time += interval;
+            jobs.add(jobPool.poll());
+        }
+        for (int i = 0; i < jobs.size(); i++)
+            jobPool.offer(jobs.get(i));
+    }
+
+    void IncrementCPUTime (int interval) {
+        for (int i = 0; i < localCenter.jobList.size(); i++)
+            localCenter.jobList.get(i).time += interval;
+    }
+
+    void IncrementTransferTime (int interval) {
+        for (int i = 0; i < jobsTransferring.size(); i++)
+            jobsTransferring.get(i).time += interval;
+        for (int i = 0; i < localCenter.transferringJobs.size(); i++)
+            localCenter.transferringJobs.get(i).time += interval;
+
+    }
+
+    void CreateDevices () {
+        Device highPriority = new Device(1, 1);
+        Device midPriority = new Device(2, 2);
+        Device lowPriority = new Device (3, 3);
+        deviceList.add(highPriority);
+        deviceList.add(midPriority);
+        deviceList.add(lowPriority);
+    }
+    void CreateChannels () {
+        Channel c1 = new Channel(10, 1);
+        Channel c2 = new Channel(5, 1);
+        Channel c3 = new Channel(2, 1);
+        channelPool.offer(c1);
+        channelPool.offer(c2);
+        channelPool.offer(c3);
+    }
 
     void PrintTransferring () {
         for (int i = 0; i < jobsTransferring.size(); i++)
@@ -142,23 +193,6 @@ public class DisasterNetwork {
         }
         for (int i = 0; i < channels.size(); i++)
             channelPool.offer(channels.get(i));
-    }
-
-    void CreateDevices () {
-        Device highPriority = new Device(1, 1);
-        Device midPriority = new Device(2, 2);
-        Device lowPriority = new Device (3, 3);
-        deviceList.add(highPriority);
-        deviceList.add(midPriority);
-        deviceList.add(lowPriority);
-    }
-    void CreateChannels () {
-        Channel c1 = new Channel(10, 1);
-        Channel c2 = new Channel(5, 1);
-        Channel c3 = new Channel(2, 1);
-        channelPool.offer(c1);
-        channelPool.offer(c2);
-        channelPool.offer(c3);
     }
 
 }
