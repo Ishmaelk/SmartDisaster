@@ -37,7 +37,7 @@ public class DisasterNetwork {
         completedJobs = new ArrayList<Job>();
         jobPool = new PriorityQueue<Job>(5, new JobComparator());
         channelPool = new PriorityQueue<Channel>(5, new ChannelComparator());
-        localCenter = new CPU("Local Center", 7, 5);
+        localCenter = new CPU("Local Center", 10, 5);
         remoteCenter = new RemoteCenter();
         localCenter.network = this;
         remoteCenter.network = this;
@@ -111,7 +111,7 @@ public class DisasterNetwork {
         while (!jobPool.isEmpty()) {
             Job j = jobPool.poll();
             j.time += interval;
-            jobs.add(jobPool.poll());
+            jobs.add(j);
         }
         for (int i = 0; i < jobs.size(); i++)
             jobPool.offer(jobs.get(i));

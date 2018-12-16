@@ -7,7 +7,7 @@ public class RemoteCenter extends CPU {
 
         jobList = new ArrayList<Job>();
         name = "Remote Center";
-        power = 5;
+        power = 20;
         minPower = -1;
     }
 

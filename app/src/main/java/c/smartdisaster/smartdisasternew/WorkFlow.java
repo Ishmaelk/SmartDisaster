@@ -65,7 +65,7 @@ public class WorkFlow extends AppCompatActivity {
                 localCenter.Compute();
                 remoteCenter.Compute();
 
-                network.IncrementTime(delay/1000);
+                network.IncrementTime((delay/1000));
 
                 //System.out.println("\n Printing jobs \n");
                 //network.PrintJobs();
