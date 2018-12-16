@@ -15,12 +15,20 @@ public class CPU {
 
 
     // Default Constructor //
-    CPU () { power = 100; minPower = 10; jobList = new ArrayList<Job>(); }
+    CPU () {
+        power = 100;
+        minPower = 10;
+        jobList = new ArrayList<Job>();
+        transferringJobs = new ArrayList<Job>();
+        remoteConnection = new Channel(50, -1);
+    }
 
     CPU (String n, float p) {
         name = n;
         power = p;
         minPower = 5;
+        jobList = new ArrayList<Job>();
+        transferringJobs = new ArrayList<Job>();
         remoteConnection = new Channel(50, -1);
     }
 
@@ -28,14 +36,19 @@ public class CPU {
         name = n;
         power = p;
         minPower = m;
+        jobList = new ArrayList<Job>();
+        transferringJobs = new ArrayList<Job>();
         remoteConnection = new Channel(50, -1);
     }
 
     public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
-        if (power / jobList.size() < minPower) {
+        System.out.println("computePerJob: " + (float) power / jobList.size());
+        if ( (float) power / jobList.size() < minPower) {
+            j.state = "Transferring";
             j.channel = remoteConnection;
             transferringJobs.add(j);
         } else {
+            j.state = "Computing";
             jobList.add(j);
         }
     }
@@ -46,6 +59,7 @@ public class CPU {
             j.progress += j.channel.bandwidth;
             if (j.progress >= j.totalPayLoad) {
                 j.progress = 0;
+                j.state = "Computing";
                 j.channel = null;
                 transferringJobs.remove(i);
                 remoteCenter.AddJob(j);
@@ -59,6 +73,7 @@ public class CPU {
         float computePerJob = power / jobList.size();
         for (int i = 0; i < jobList.size(); i++) {
             Job j = jobList.get(i);
+            j.state = "Completed";
             j.progress += computePerJob;
             if (j.progress >= j.totalPayLoad) {
                 network.completedJobs.add (j);

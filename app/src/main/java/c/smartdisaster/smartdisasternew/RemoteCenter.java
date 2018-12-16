@@ -1,8 +1,13 @@
 package c.smartdisaster.smartdisasternew;
 
+import java.util.ArrayList;
+
 public class RemoteCenter extends CPU {
     RemoteCenter () {
-        power = 200;
+
+        jobList = new ArrayList<Job>();
+        name = "Remote Center";
+        power = 5;
         minPower = -1;
     }
 

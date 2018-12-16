@@ -1,13 +1,10 @@
 package c.smartdisaster.smartdisasternew;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Channel {
     int id;
-    public int bandwidth; // Bytes transfered per second
-
-    public static ArrayList<Job> jobsTransferring;
+    int bandwidth; // Bytes transfered per second
 
     Channel(int bandwidth, int Id){
         this.bandwidth = bandwidth;

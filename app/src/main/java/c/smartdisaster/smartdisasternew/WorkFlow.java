@@ -4,6 +4,7 @@ package c.smartdisaster.smartdisasternew;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -24,10 +25,13 @@ public class WorkFlow extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
         network = new DisasterNetwork ();
         localCenter = network.localCenter;
         remoteCenter = network.remoteCenter;
         localCenter.remoteCenter = remoteCenter;
+        network.CreateDevices();
+        network.CreateChannels();
         setContentView(R.layout.activity_work_flow);
 
         //go back to infrastructure status
@@ -51,12 +55,31 @@ public class WorkFlow extends AppCompatActivity {
         handler.postDelayed( runnable = new Runnable() {
             public void run() {
                 network.elapsedTime++;
+                network.GenerateJobs();
+                network.LoadJobs();
                 network.TransferJobs();
-                //network
+
                 // Enter Network Events here //
+                localCenter.TransferToRemote();
                 localCenter.Compute();
                 remoteCenter.Compute();
+
+                //System.out.println("\n Printing jobs \n");
+                //network.PrintJobs();
+                //System.out.println("\n Printing Channels \n");
+                //network.PrintChannels();
+                System.out.println("\n Printing Transfers \n");
+                network.PrintTransferring();
+                System.out.println("\n Printing Compute \n");
+                network.PrintComputing();
+                System.out.println("\n Printing Remote Transfer \n");
+                network.PrintRemoteTransfer();
+                System.out.println("\n Printing Remote Compute \n");
+                network.PrintRemoteCompute();
+
+
                 handler.postDelayed(runnable, 1000);
+
             }
         }, 1000);
         super.onResume();
