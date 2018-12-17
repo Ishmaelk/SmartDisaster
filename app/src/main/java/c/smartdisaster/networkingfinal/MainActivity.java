@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     TableLayout stk;
     TextView showValue,showValue1,showValue2;
+    Button pauseButton;
 
     DisasterNetwork network;
     CPU localCenter;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         showValue=(TextView) findViewById(R.id.LCapacityNum);
         showValue1=(TextView) findViewById(R.id.LCapacityNum2);
+        pauseButton = (Button) findViewById(R.id.pauseButton);
 
         updateLocalCapacity(localCenter.GetUsage());
         stk = (TableLayout) findViewById(R.id.table_main);
@@ -50,41 +52,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() { // Handles events that occur once every second
-        network.paused = false;
+        if (network.paused)
+            return;
         final int delay = 1000;
         handler.postDelayed( runnable = new Runnable() {
             public void run() {
-                network.elapsedTime++;
-                network.GenerateJobs();
-                network.LoadJobs();
-                network.TransferJobs();
+                if (!network.paused) {
+                    network.elapsedTime++;
+                    network.GenerateJobs();
+                    network.LoadJobs();
+                    network.TransferJobs();
+                    localCenter.TransferToRemote();
+                    localCenter.Compute();
+                    remoteCenter.Compute();
+                    network.IncrementTime((delay / 1000));
+                    init(network.activeJobs);
+                    updateLocalCapacity(localCenter.GetComputePerJob());
 
-                // Enter Network Events here //
-                localCenter.TransferToRemote();
-                localCenter.Compute();
-                remoteCenter.Compute();
-
-                network.IncrementTime((delay/1000));
-
-//                System.out.println("\n Printing jobs \n");
-//                network.PrintJobs();
-//                System.out.println("\n Printing Channels \n");
-//                network.PrintChannels();
-//                System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
-//                System.out.println("\n Printing Transfers \n");
-//                network.PrintTransferring();
-//                System.out.println("\n Printing Compute \n");
-//                network.PrintComputing();
-//                System.out.println("\n Printing Remote Transfer \n");
-//                network.PrintRemoteTransfer();
-//                System.out.println("\n Printing Remote Compute \n");
-//                network.PrintRemoteCompute();
-                init(network.activeJobs);
-                updateLocalCapacity(localCenter.GetComputePerJob());
-                if(showValue != null)
-                    showValue.setText("    "+Integer.toString(network.numAvailableChannels));
-                if (showValue2 != null)
-                    showValue2.setText("   " +Integer.toString(network.jobsPerSecond));
+                    if (showValue != null)
+                        showValue.setText("    " + Integer.toString(network.numAvailableChannels));
+                    if (showValue2 != null)
+                        showValue2.setText("   " + Integer.toString(network.jobsPerSecond));
+                }
                 handler.postDelayed(runnable, delay);
 
             }
@@ -94,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override // pauses the ticker when activity is not visible
     protected void onPause() {
-        network.paused = true;
         handler.removeCallbacks(runnable); //stop handler when activity not visible
         super.onPause();
     }
@@ -142,6 +130,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void pauseHandler (View view) {
+        network.paused = !network.paused;
+        String text = network.paused ? "Unpause" : "Pause";
+        pauseButton.setText(text);
+    }
+
     public TextView createAndFormatTextView (TableRow row) {
         TextView text = new TextView(this);
         text.setTextColor(Color.BLACK);
@@ -176,4 +170,21 @@ public class MainActivity extends AppCompatActivity {
         network.numAvailableChannels--;
         showValue.setText(Integer.toString(network.numAvailableChannels));
     }
+
+    public void outputData () {
+        System.out.println("\n Printing jobs \n");
+        network.PrintJobs();
+        System.out.println("\n Printing Channels \n");
+        network.PrintChannels();
+        System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
+        System.out.println("\n Printing Transfers \n");
+        network.PrintTransferring();
+        System.out.println("\n Printing Compute \n");
+        network.PrintComputing();
+        System.out.println("\n Printing Remote Transfer \n");
+        network.PrintRemoteTransfer();
+        System.out.println("\n Printing Remote Compute \n");
+        network.PrintRemoteCompute();
+    }
+
 }
