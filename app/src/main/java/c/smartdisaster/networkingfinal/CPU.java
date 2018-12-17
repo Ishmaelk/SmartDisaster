@@ -78,6 +78,7 @@ public class CPU {
             j.progress += computePerJob;
             if (j.progress >= j.totalPayLoad) {
                 network.completedJobs.add (j);
+                network.activeJobs.remove(i);
                 jobList.remove(i);
             }
         }

@@ -14,51 +14,136 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+    TableLayout stk;
     TextView showValue,showValue1,showValue2;
     int counter=0,counter1=0;
 
+    DisasterNetwork network;
+    CPU localCenter;
+    RemoteCenter remoteCenter;
+
+    android.os.Handler handler;
+    Runnable runnable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
+        network = new DisasterNetwork ();
+        localCenter = network.localCenter;
+        remoteCenter = network.remoteCenter;
+        localCenter.remoteCenter = remoteCenter;
+        network.CreateDevices();
+        network.CreateChannels();
         setContentView(R.layout.activity_main);
-
         LayoutInflater inflater = getLayoutInflater();
-        //ProgressBar bar = (ProgressBar ) inflater.inflate(R.layout.small_progress_bar, null);
-        init();
-
         showValue=(TextView) findViewById(R.id.LCapacityNum);
         showValue1=(TextView) findViewById(R.id.LCapacityNum3);
+        updateLocalCapacity(localCenter.power);
+        stk = (TableLayout) findViewById(R.id.table_main);
+        init(new ArrayList<Job>());
+    }
 
-        updateLocalCapacity(12.1);
-
-       /* new Thread(new Runnable() {
-            @Override
+    @Override
+    protected void onResume() { // Handles events that occur once every second
+        network.paused = false;
+        final int delay = 1000;
+        handler.postDelayed( runnable = new Runnable() {
             public void run() {
-                while (Pstatus < 100){
-                    Pstatus++;
-                    android.os.SystemClock.sleep(50);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            prg.setProgress(Pstatus);
-                        }
-                    });
+                network.elapsedTime++;
+                network.GenerateJobs();
+                network.LoadJobs();
+                network.TransferJobs();
 
-                }
+                // Enter Network Events here //
+                localCenter.TransferToRemote();
+                localCenter.Compute();
+                remoteCenter.Compute();
+
+                network.IncrementTime((delay/1000));
+
+                //System.out.println("\n Printing jobs \n");
+                //network.PrintJobs();
+                //System.out.println("\n Printing Channels \n");
+                //network.PrintChannels();
+                System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
+                System.out.println("\n Printing Transfers \n");
+                network.PrintTransferring();
+                System.out.println("\n Printing Compute \n");
+                network.PrintComputing();
+                System.out.println("\n Printing Remote Transfer \n");
+                network.PrintRemoteTransfer();
+                System.out.println("\n Printing Remote Compute \n");
+                network.PrintRemoteCompute();
+                init(network.activeJobs);
+
+                handler.postDelayed(runnable, delay);
 
             }
-        })*/
-
-
+        }, delay);
+        super.onResume();
     }
+
+    @Override // pauses the ticker when activity is not visible
+    protected void onPause() {
+        network.paused = true;
+        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
+    }
+
+    public void init (ArrayList<Job> activeJobs) {
+
+        String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "  STATE  ", "  NETWORK TIME  ",
+                "   COMPUTE TIME  ", "  Location  ", "  PROGRESS  "};
+        stk.removeAllViews();
+        stk.removeAllViewsInLayout();
+        TableRow tbrow0 = new TableRow(this);
+        for (int i = 0; i < columns.length; i++) {
+            TextView tv0 = createAndFormatTextView(tbrow0);
+            tv0.setText(columns[i]);
+        } stk.addView(tbrow0);
+
+        for (int i = 0; i < Math.min(activeJobs.size(), 12); i++) {
+            TableRow tbrow = new TableRow(this);
+            Job j = activeJobs.get(i);
+            TextView idText = createAndFormatTextView(tbrow);
+            idText.setText(String.valueOf(j.id));
+            TextView deviceText = createAndFormatTextView(tbrow);
+            deviceText.setText(j.deviceOrigin);
+            TextView priorityText = createAndFormatTextView(tbrow);
+            priorityText.setText(String.valueOf(j.priority));
+            TextView stateText = createAndFormatTextView(tbrow);
+            stateText.setText(j.state);
+            TextView networkText = createAndFormatTextView(tbrow);
+            networkText.setText(String.valueOf(j.time));
+            TextView computeText = createAndFormatTextView(tbrow);
+            computeText.setText(String.valueOf(j.time));
+
+            TextView locationText = createAndFormatTextView(tbrow);
+            locationText.setText(j.location);
+            TextView progressText = createAndFormatTextView(tbrow);
+            progressText.setText(String.valueOf(j.GetProgress()));
+            stk.addView(tbrow);
+        }
+    }
+
+    public TextView createAndFormatTextView (TableRow row) {
+        TextView text = new TextView(this);
+        text.setTextColor(Color.BLACK);
+        text.setGravity(Gravity.CENTER);
+        row.addView(text);
+        return text;
+    }
+
+
     public void updateLocalCapacity(double toThis) {
         TextView textView = (TextView) findViewById(R.id.LCapInput);
         textView.setText((Double.toString(toThis)));
     }
 
     public void countIn (View view){
-        //
         counter++;
         showValue.setText(Integer.toString(counter));
     }
@@ -69,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
         showValue.setText(Integer.toString(counter));
     }
     public void countIn1(View view){
-        //
         counter1++;
         showValue1.setText(Integer.toString(counter1));
     }
@@ -78,89 +162,5 @@ public class MainActivity extends AppCompatActivity {
             return;
         counter1--;
         showValue1.setText(Integer.toString(counter1));
-    }
-    public void init() {
-
-        TableLayout stk = (TableLayout) findViewById(R.id.table_main);
-        TableRow tbrow0 = new TableRow(this);
-        TextView tv0 = new TextView(this);
-        tv0.setText(" JOB ID ");
-        tv0.setTextColor(Color.BLACK);
-        tbrow0.addView(tv0);
-        TextView tv1 = new TextView(this);
-        tv1.setText("  DEVICE  ");
-        tv1.setTextColor(Color.BLACK);
-        tbrow0.addView(tv1);
-        TextView tv2 = new TextView(this);
-        tv2.setText("  STATE  ");
-        tv2.setTextColor(Color.BLACK);
-        tbrow0.addView(tv2);
-        TextView tv3 = new TextView(this);
-        tv3.setText("  NETWORK TIME  ");
-        tv3.setTextColor(Color.BLACK);
-        tbrow0.addView(tv3);
-        TextView tv4 = new TextView(this);
-        tv4.setText(" " + "  COMPUTE TIME  ");
-        tv4.setTextColor(Color.BLACK);
-        tbrow0.addView(tv4);
-        TextView tv5 = new TextView(this);
-        tv5.setText(" " + "  TOTAL TIME  ");
-        tv5.setTextColor(Color.BLACK);
-        tbrow0.addView(tv5);
-        TextView tv6 = new TextView(this);
-        tv6.setText(" " + "  LOCATION  ");
-        tv6.setTextColor(Color.BLACK);
-        tbrow0.addView(tv6);
-        TextView tv7 = new TextView(this);
-        tv7.setText(" " + " PROGRESS  ");
-        tv7.setTextColor(Color.BLACK);
-        tbrow0.addView(tv7);
-        stk.addView(tbrow0);
-        for (int i = 0; i < 10; i++) {
-            double j = 0.0;
-            TableRow tbrow = new TableRow(this);
-            TextView t1v = new TextView(this);
-            t1v.setText("10" + i + " ");
-            t1v.setTextColor(Color.BLACK);
-            t1v.setGravity(Gravity.CENTER);
-            tbrow.addView(t1v);
-            TextView t2v = new TextView(this);
-            t2v.setText(" " + "20" + i);
-            t2v.setTextColor(Color.BLACK);
-            t2v.setGravity(Gravity.CENTER);
-            tbrow.addView(t2v);
-            TextView t3v = new TextView(this);
-            t3v.setText("Commputing");
-            t3v.setTextColor(Color.BLACK);
-            t3v.setGravity(Gravity.CENTER);
-            tbrow.addView(t3v);
-            TextView t4v = new TextView(this);
-            t4v.setText(String.format("%.2f", j++));
-            t4v.setTextColor(Color.BLACK);
-            t4v.setGravity(Gravity.CENTER);
-            tbrow.addView(t4v);
-            TextView t5v = new TextView(this);
-            t5v.setText(String.format("%.2f", j + 2));
-            t5v.setTextColor(Color.BLACK);
-            t5v.setGravity(Gravity.CENTER);
-            tbrow.addView(t5v);
-            TextView t6v = new TextView(this);
-            t6v.setText(String.format("%.2f", j + 3));
-            t6v.setTextColor(Color.BLACK);
-            t6v.setGravity(Gravity.CENTER);
-            tbrow.addView(t6v);
-            TextView t7v = new TextView(this);
-            t7v.setText("LC");
-            t7v.setTextColor(Color.BLACK);
-            t7v.setGravity(Gravity.CENTER);
-            tbrow.addView(t7v);
-            TextView t8v = new TextView(this);
-            t8v.setText(String.format("%.2f", j + 2));
-            t8v.setTextColor(Color.BLACK);
-            t8v.setGravity(Gravity.CENTER);
-            tbrow.addView(t8v);
-            stk.addView(tbrow);
-        }
-
     }
 }

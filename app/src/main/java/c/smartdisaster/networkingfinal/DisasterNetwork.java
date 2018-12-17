@@ -15,7 +15,7 @@ public class DisasterNetwork {
     int numAvailableChannels; // the number of active channels
     ArrayList<Job> allJobs; // the list of all jobs, created //
     ArrayList<Job> jobsTransferring;
-
+    ArrayList<Job> activeJobs;
     // Compute Variables
     public ArrayList<Job> completedJobs;
     CPU localCenter;
@@ -32,7 +32,7 @@ public class DisasterNetwork {
         numAvailableChannels = 5;
         jobsPerSecond = 1;
         paused = false;
-
+        activeJobs = new ArrayList<Job>();
         allJobs = new ArrayList<Job>();
         completedJobs = new ArrayList<Job>();
         jobPool = new PriorityQueue<Job>(5, new JobComparator());
@@ -67,6 +67,7 @@ public class DisasterNetwork {
             Job j = deviceList.get(deviceID).CreateJob(jobId++);
             j.location = "Job Queue";
             allJobs.add(j);
+            activeJobs.add(j);
             jobPool.offer(j);
         }
     }
@@ -111,6 +112,7 @@ public class DisasterNetwork {
         while (!jobPool.isEmpty()) {
             Job j = jobPool.poll();
             j.time += interval;
+            j.networkTime += interval;
             jobs.add(j);
         }
         for (int i = 0; i < jobs.size(); i++)
@@ -118,15 +120,24 @@ public class DisasterNetwork {
     }
 
     void IncrementCPUTime (int interval) {
-        for (int i = 0; i < localCenter.jobList.size(); i++)
+        for (int i = 0; i < localCenter.jobList.size(); i++) {
             localCenter.jobList.get(i).time += interval;
+            localCenter.jobList.get(i).computeTime += interval;
+        }
+        for (int i = 0; i < remoteCenter.jobList.size(); i++)
+            remoteCenter.jobList.get(i).computeTime += interval;
+
     }
 
     void IncrementTransferTime (int interval) {
-        for (int i = 0; i < jobsTransferring.size(); i++)
+        for (int i = 0; i < jobsTransferring.size(); i++) {
             jobsTransferring.get(i).time += interval;
-        for (int i = 0; i < localCenter.transferringJobs.size(); i++)
+            jobsTransferring.get(i).networkTime += interval;
+        }
+        for (int i = 0; i < localCenter.transferringJobs.size(); i++) {
             localCenter.transferringJobs.get(i).time += interval;
+            localCenter.transferringJobs.get(i).networkTime += interval;
+        }
 
     }
 
