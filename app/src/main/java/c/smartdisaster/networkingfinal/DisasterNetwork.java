@@ -29,7 +29,7 @@ public class DisasterNetwork {
     DisasterNetwork () {
         jobId = 1;
         channelId = 1;
-        numAvailableChannels = 5;
+        numAvailableChannels = 3;
         jobsPerSecond = 1;
         paused = false;
         activeJobs = new ArrayList<Job>();

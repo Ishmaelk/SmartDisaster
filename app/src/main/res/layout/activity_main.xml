@@ -8,64 +8,111 @@
 
 
     <TextView
-        android:id="@+id/LCapacityNum3"
+        android:id="@+id/LCapacityNum2"
         android:layout_width="144dp"
-        android:layout_height="41dp"
+        android:layout_height="45dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="84dp"
-        android:text="TextView"
+        android:layout_marginBottom="8dp"
+        android:text="        0"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/decrease2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.785"
+        app:layout_constraintHorizontal_bias="0.776"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/increase2"
-        app:layout_constraintVertical_bias="1.0" />
-
+        app:layout_constraintVertical_bias="0.722" />
 
     <ScrollView
         android:id="@+id/scrollView1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_width="fill_parent"
+        android:layout_height="320px"
         android:background="@color/white"
-        android:scrollbars="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_alignParentLeft="true" >
 
         <HorizontalScrollView
             android:id="@+id/hscrll1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content" >
 
             <RelativeLayout
                 android:id="@+id/RelativeLayout1"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
                 android:layout_gravity="center"
-                android:orientation="vertical">
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
 
-                <ScrollView
+                <TableLayout
+                    android:id="@+id/table_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true">
-
-                    <TableLayout
-                        android:id="@+id/table_main"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-
-                </ScrollView>
+                    android:layout_centerHorizontal="true" >
+                </TableLayout>
             </RelativeLayout>
         </HorizontalScrollView>
     </ScrollView>
+    <!--<TextView-->
+        <!--android:id="@+id/LCapacityNum3"-->
+        <!--android:layout_width="144dp"-->
+        <!--android:layout_height="41dp"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginLeft="8dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--android:layout_marginBottom="84dp"-->
+        <!--android:text="        0"-->
+        <!--android:textSize="30sp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.785"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/increase2"-->
+        <!--app:layout_constraintVertical_bias="1.0" />-->
+
+
+    <!--<ScrollView-->
+        <!--android:id="@+id/scrollView1"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:background="@color/white"-->
+        <!--android:scrollbars="horizontal"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent">-->
+
+        <!--<HorizontalScrollView-->
+            <!--android:id="@+id/hscrll1"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content">-->
+
+
+            <!--<RelativeLayout-->
+                <!--android:id="@+id/RelativeLayout1"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:orientation="vertical">-->
+
+                <!--<ScrollView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true">-->
+
+                    <!--<TableLayout-->
+                        <!--android:id="@+id/table_main"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content" />-->
+
+
+                <!--</ScrollView>-->
+            <!--</RelativeLayout>-->
+        <!--</HorizontalScrollView>-->
+    <!--</ScrollView>-->
 
 
         <View
@@ -113,14 +160,14 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="1dp"
-        android:onClick="countIn"
+        android:onClick="increaseNumChannels"
         android:text="@string/increase"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.328"
+        app:layout_constraintHorizontal_bias="0.321"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.673" />
+        app:layout_constraintVertical_bias="0.697" />
 
     <Button
         android:id="@+id/increase2"
@@ -130,7 +177,7 @@
         android:layout_marginLeft="288dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:onClick="countIn1"
+        android:onClick="increaseJobsPerSecond"
         android:text="@string/increase"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/increase"
@@ -143,10 +190,10 @@
         android:layout_height="45dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="TextView"
+        android:text="        0"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.315"
@@ -163,14 +210,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="16dp"
-        android:onClick="countDe"
+        android:onClick="decreaseNumChannels"
         android:text="decrease"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.323"
+        app:layout_constraintHorizontal_bias="0.319"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LCapacityNum"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/decrease2"
@@ -180,7 +227,7 @@
         android:layout_marginLeft="284dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:onClick="countDe1"
+        android:onClick="decreaseJobsPerSecond"
         android:text="decrease"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/decrease"
@@ -191,10 +238,11 @@
         android:id="@+id/NumofLocalChanTit"
         android:layout_width="238dp"
         android:layout_height="25dp"
-        android:layout_marginStart="236dp"
-        android:layout_marginLeft="236dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginStart="212dp"
+        android:layout_marginLeft="212dp"
+        android:layout_marginTop="256dp"
         android:text="Number of Local Channels"
+        android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -205,13 +253,14 @@
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="256dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="Jobs per second"
+        android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toEndOf="@+id/NumofLocalChanTit"
         app:layout_constraintTop_toTopOf="parent" />
 

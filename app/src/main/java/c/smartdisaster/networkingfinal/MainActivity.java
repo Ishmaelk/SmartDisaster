@@ -40,8 +40,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         LayoutInflater inflater = getLayoutInflater();
         showValue=(TextView) findViewById(R.id.LCapacityNum);
-        showValue1=(TextView) findViewById(R.id.LCapacityNum3);
-        updateLocalCapacity(localCenter.power);
+        showValue1=(TextView) findViewById(R.id.LCapacityNum2);
+
+        updateLocalCapacity(localCenter.GetUsage());
         stk = (TableLayout) findViewById(R.id.table_main);
         init(new ArrayList<Job>());
     }
@@ -78,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("\n Printing Remote Compute \n");
                 network.PrintRemoteCompute();
                 init(network.activeJobs);
-
+                updateLocalCapacity(localCenter.GetComputePerJob());
+                //showValue.setText(Integer.toString(network.numAvailableChannels));
+                //showValue2.setText(Integer.toString(network.jobsPerSecond));
                 handler.postDelayed(runnable, delay);
 
             }
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             tv0.setText(columns[i]);
         } stk.addView(tbrow0);
 
-        for (int i = 0; i < Math.min(activeJobs.size(), 12); i++) {
+        for (int i = 0; i < Math.min(activeJobs.size(), 99); i++) {
             TableRow tbrow = new TableRow(this);
             Job j = activeJobs.get(i);
             TextView idText = createAndFormatTextView(tbrow);
@@ -117,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
             TextView stateText = createAndFormatTextView(tbrow);
             stateText.setText(j.state);
             TextView networkText = createAndFormatTextView(tbrow);
-            networkText.setText(String.valueOf(j.time));
+            networkText.setText(String.valueOf(j.networkTime));
             TextView computeText = createAndFormatTextView(tbrow);
-            computeText.setText(String.valueOf(j.time));
+            computeText.setText(String.valueOf(j.computeTime));
 
             TextView locationText = createAndFormatTextView(tbrow);
             locationText.setText(j.location);
@@ -143,24 +146,24 @@ public class MainActivity extends AppCompatActivity {
         textView.setText((Double.toString(toThis)));
     }
 
-    public void countIn (View view){
-        counter++;
-        showValue.setText(Integer.toString(counter));
+    public void increaseJobsPerSecond (View view){
+        network.jobsPerSecond++;
+        showValue1.setText(Integer.toString(network.jobsPerSecond));
     }
-    public void countDe(View view){
-        if (counter <= 0)
+    public void decreaseJobsPerSecond(View view){
+        if (network.jobsPerSecond <= 0)
             return;
-        counter--;
-        showValue.setText(Integer.toString(counter));
+        network.jobsPerSecond--;
+        showValue1.setText(Integer.toString(network.jobsPerSecond));
     }
-    public void countIn1(View view){
-        counter1++;
-        showValue1.setText(Integer.toString(counter1));
+    public void increaseNumChannels(View view){
+        network.numAvailableChannels++;
+        showValue.setText(Integer.toString(network.numAvailableChannels));
     }
-    public void countDe1(View view){
-        if (counter1 <= 0)
+    public void decreaseNumChannels(View view){
+        if (network.numAvailableChannels <= 0)
             return;
-        counter1--;
-        showValue1.setText(Integer.toString(counter1));
+        network.numAvailableChannels--;
+        showValue.setText(Integer.toString(network.numAvailableChannels));
     }
 }
