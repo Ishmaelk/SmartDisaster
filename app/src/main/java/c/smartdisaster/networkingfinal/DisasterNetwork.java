@@ -14,6 +14,7 @@ public class DisasterNetwork {
     int jobsPerSecond; // how many jobs are generated per second
     int numAvailableChannels; // the number of active channels
     ArrayList<Job> allJobs; // the list of all jobs, created //
+    ArrayList<Channel> allChannels; // the list of all channels //
     ArrayList<Job> jobsTransferring;
     ArrayList<Job> activeJobs;
     // Compute Variables
@@ -32,6 +33,7 @@ public class DisasterNetwork {
         numAvailableChannels = 3;
         jobsPerSecond = 1;
         paused = false;
+        allChannels = new ArrayList<Channel>();
         activeJobs = new ArrayList<Job>();
         allJobs = new ArrayList<Job>();
         completedJobs = new ArrayList<Job>();
@@ -55,9 +57,19 @@ public class DisasterNetwork {
 
     // Destroys a channel | On click event for channel dial //
     void DestroyChannel () {
-        numAvailableChannels = Math.max(--numAvailableChannels, 0);
-        while (channelPool.size() > numAvailableChannels)
+        if (channelPool.size() != 0) {
             channelPool.poll();
+            return;
+        }
+        if (jobsTransferring.size() == 0)
+            return;
+        Random rand = new Random();
+        int r = rand.nextInt(100);
+        Job j = jobsTransferring.get(r % jobsTransferring.size());
+        j.channel = null;
+        j.state = "Interrupted";
+        jobsTransferring.remove(j);
+        numAvailableChannels--;
     }
 
     void GenerateJobs () { // generates jobs every second | Called in Workflow.java
@@ -87,6 +99,8 @@ public class DisasterNetwork {
     void TransferJobs () { // Transfers jobs from devices to local center
         for (int i = 0; i < jobsTransferring.size(); i++) {
             Job j = jobsTransferring.get(i);
+            if (j.channel == null)
+                continue;
             j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
                 j.progress = 0;
@@ -142,12 +156,9 @@ public class DisasterNetwork {
     }
 
     void CreateDevices () {
-        Device highPriority = new Device(1, 1);
-        Device midPriority = new Device(2, 2);
-        Device lowPriority = new Device (3, 3);
-        deviceList.add(highPriority);
-        deviceList.add(midPriority);
-        deviceList.add(lowPriority);
+        for (int i = 1; i <= 3; i++) {
+            deviceList.add(new Device(i, i));
+        }
     }
     void CreateChannels () {
         Channel c1 = new Channel(10, channelId++);
@@ -156,6 +167,9 @@ public class DisasterNetwork {
         channelPool.offer(c1);
         channelPool.offer(c2);
         channelPool.offer(c3);
+        allChannels.add(c1);
+        allChannels.add(c2);
+        allChannels.add(c3);
     }
 
     void PrintTransferring () {

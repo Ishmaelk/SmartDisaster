@@ -161,13 +161,13 @@ public class MainActivity extends AppCompatActivity {
         showValue1.setText(Integer.toString(network.jobsPerSecond));
     }
     public void increaseNumChannels(View view){
-        network.numAvailableChannels++;
+        network.CreateChannel();
         showValue.setText(Integer.toString(network.numAvailableChannels));
     }
     public void decreaseNumChannels(View view){
         if (network.numAvailableChannels <= 0)
             return;
-        network.numAvailableChannels--;
+        network.DestroyChannel();
         showValue.setText(Integer.toString(network.numAvailableChannels));
     }
 
