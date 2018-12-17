@@ -1,10 +1,14 @@
 package c.smartdisaster.networkingfinal;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +19,15 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    ActivityManager activityManager;
     TableLayout stk;
     TextView showValue,showValue1,showValue2;
     Button pauseButton;
 
-    DisasterNetwork network;
+    static DisasterNetwork network;
     CPU localCenter;
     RemoteCenter remoteCenter;
 
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
         showValue = null;
         showValue2 = null;
         handler = new Handler();
@@ -48,15 +55,24 @@ public class MainActivity extends AppCompatActivity {
         updateLocalCapacity(localCenter.GetUsage());
         stk = (TableLayout) findViewById(R.id.table_main);
         init(new ArrayList<Job>());
+
+        Button toGraphButton =(Button) findViewById(R.id.graphView);
+        toGraphButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), graphView.class);
+                startActivity(startIntent);
+            }
+        });
     }
 
     @Override
     protected void onResume() { // Handles events that occur once every second
-        if (network.paused)
-            return;
         final int delay = 1000;
+
         handler.postDelayed( runnable = new Runnable() {
             public void run() {
+
                 if (!network.paused) {
                     network.elapsedTime++;
                     network.GenerateJobs();
@@ -83,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override // pauses the ticker when activity is not visible
     protected void onPause() {
+        network.paused = true;
         handler.removeCallbacks(runnable); //stop handler when activity not visible
         super.onPause();
     }
@@ -135,6 +152,11 @@ public class MainActivity extends AppCompatActivity {
         String text = network.paused ? "Unpause" : "Pause";
         pauseButton.setText(text);
     }
+
+    /*public void toGraphView (View view) {
+        onPause();
+        setContentView(R.layout.activity_graph_view);
+    }*/
 
     public TextView createAndFormatTextView (TableRow row) {
         TextView text = new TextView(this);

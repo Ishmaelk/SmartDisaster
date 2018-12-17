@@ -16,6 +16,7 @@ public class DisasterNetwork {
     ArrayList<Job> allJobs; // the list of all jobs, created //
     ArrayList<Job> jobsTransferring;
     ArrayList<Job> activeJobs;
+    ArrayList<Integer> dataPerSecond;
     // Compute Variables
     public ArrayList<Job> completedJobs;
     CPU localCenter;
@@ -85,8 +86,10 @@ public class DisasterNetwork {
     }
 
     void TransferJobs () { // Transfers jobs from devices to local center
+        int dataTransferred = 0;
         for (int i = 0; i < jobsTransferring.size(); i++) {
             Job j = jobsTransferring.get(i);
+            dataTransferred += j.channel.bandwidth;
             j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
                 j.progress = 0;
@@ -96,6 +99,7 @@ public class DisasterNetwork {
                 localCenter.AddJob(j);
             }
         }
+        dataPerSecond.add(dataTransferred);
     }
 
 
