@@ -10,17 +10,6 @@ public class Channel {
         this.bandwidth = bandwidth;
         this.id = Id;
     }
-
-    void TransferData(Job j) {
-        j.progress += j.channel.bandwidth;
-
-        /*try {
-            Thread.sleep(bandwidth*100);
-        } catch (InterruptedException e) {
-            System.out.println("Channel "+ Id + " has stopped transferring.");
-            return;
-        }*/
-    }
 }
 
 class ChannelComparator implements Comparator<Channel> {

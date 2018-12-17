@@ -43,6 +43,7 @@ public class CPU {
 
     public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
         if ( GetComputePerJob() < minPower) {
+            j.progress = 0;
             j.state = "Transferring";
             j.location = "Remote Channel";
             j.channel = remoteConnection;
@@ -57,10 +58,11 @@ public class CPU {
     void TransferToRemote () { // transfers to remote center | only used by the localCenter c.smartdisaster.smartdisasternew.CPU object
         for (int i = 0; i < transferringJobs.size(); i++) {
             Job j = transferringJobs.get(i);
-            j.progress += j.channel.bandwidth;
+            j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
                 j.progress = 0;
                 j.state = "Computing";
+                j.location = "Remote Center";
                 j.channel = null;
                 transferringJobs.remove(i);
                 remoteCenter.AddJob(j);
@@ -74,9 +76,9 @@ public class CPU {
         float computePerJob = power / jobList.size();
         for (int i = 0; i < jobList.size(); i++) {
             Job j = jobList.get(i);
-            j.state = "Completed";
-            j.progress += computePerJob;
+            j.progress = (int) Math.min(j.progress + computePerJob, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
+                j.state = "Completed";
                 network.completedJobs.add (j);
                 network.activeJobs.remove(i);
                 jobList.remove(i);
@@ -85,6 +87,8 @@ public class CPU {
     }
 
     float GetComputePerJob () {
+        if (jobList.size() == 0)
+            return power;
         float computePerJob = (float) power / jobList.size();
         return computePerJob;
     }

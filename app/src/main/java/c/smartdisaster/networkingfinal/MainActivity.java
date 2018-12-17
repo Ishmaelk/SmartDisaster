@@ -19,7 +19,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     TableLayout stk;
     TextView showValue,showValue1,showValue2;
-    int counter=0,counter1=0;
 
     DisasterNetwork network;
     CPU localCenter;
@@ -30,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        showValue = null;
+        showValue2 = null;
         handler = new Handler();
         network = new DisasterNetwork ();
         localCenter = network.localCenter;
@@ -65,23 +66,25 @@ public class MainActivity extends AppCompatActivity {
 
                 network.IncrementTime((delay/1000));
 
-                //System.out.println("\n Printing jobs \n");
-                //network.PrintJobs();
-                //System.out.println("\n Printing Channels \n");
-                //network.PrintChannels();
-                System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
-                System.out.println("\n Printing Transfers \n");
-                network.PrintTransferring();
-                System.out.println("\n Printing Compute \n");
-                network.PrintComputing();
-                System.out.println("\n Printing Remote Transfer \n");
-                network.PrintRemoteTransfer();
-                System.out.println("\n Printing Remote Compute \n");
-                network.PrintRemoteCompute();
+//                System.out.println("\n Printing jobs \n");
+//                network.PrintJobs();
+//                System.out.println("\n Printing Channels \n");
+//                network.PrintChannels();
+//                System.out.println("\n ComputePerJob: " + localCenter.GetComputePerJob());
+//                System.out.println("\n Printing Transfers \n");
+//                network.PrintTransferring();
+//                System.out.println("\n Printing Compute \n");
+//                network.PrintComputing();
+//                System.out.println("\n Printing Remote Transfer \n");
+//                network.PrintRemoteTransfer();
+//                System.out.println("\n Printing Remote Compute \n");
+//                network.PrintRemoteCompute();
                 init(network.activeJobs);
                 updateLocalCapacity(localCenter.GetComputePerJob());
-                //showValue.setText(Integer.toString(network.numAvailableChannels));
-                //showValue2.setText(Integer.toString(network.jobsPerSecond));
+                if(showValue != null)
+                    showValue.setText("    "+Integer.toString(network.numAvailableChannels));
+                if (showValue2 != null)
+                    showValue2.setText("   " +Integer.toString(network.jobsPerSecond));
                 handler.postDelayed(runnable, delay);
 
             }
@@ -98,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void init (ArrayList<Job> activeJobs) {
 
-        String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "  STATE  ", "  NETWORK TIME  ",
-                "   COMPUTE TIME  ", "  Location  ", "  PROGRESS  "};
+        String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "    STATE    ",
+                "    Location    ", "  NETWORK TIME  ", "   COMPUTE TIME  ", "  PROGRESS  "};
         stk.removeAllViews();
         stk.removeAllViewsInLayout();
         TableRow tbrow0 = new TableRow(this);
@@ -108,26 +111,33 @@ public class MainActivity extends AppCompatActivity {
             tv0.setText(columns[i]);
         } stk.addView(tbrow0);
 
-        for (int i = 0; i < Math.min(activeJobs.size(), 99); i++) {
+        for (int i = 0; i < activeJobs.size(); i++) {
             TableRow tbrow = new TableRow(this);
             Job j = activeJobs.get(i);
+
             TextView idText = createAndFormatTextView(tbrow);
             idText.setText(String.valueOf(j.id));
+
             TextView deviceText = createAndFormatTextView(tbrow);
             deviceText.setText(j.deviceOrigin);
+
             TextView priorityText = createAndFormatTextView(tbrow);
             priorityText.setText(String.valueOf(j.priority));
+
             TextView stateText = createAndFormatTextView(tbrow);
             stateText.setText(j.state);
-            TextView networkText = createAndFormatTextView(tbrow);
-            networkText.setText(String.valueOf(j.networkTime));
-            TextView computeText = createAndFormatTextView(tbrow);
-            computeText.setText(String.valueOf(j.computeTime));
 
             TextView locationText = createAndFormatTextView(tbrow);
             locationText.setText(j.location);
+
+            TextView networkText = createAndFormatTextView(tbrow);
+            networkText.setText(String.valueOf(j.networkTime));
+
+            TextView computeText = createAndFormatTextView(tbrow);
+            computeText.setText(String.valueOf(j.computeTime));
+
             TextView progressText = createAndFormatTextView(tbrow);
-            progressText.setText(String.valueOf(j.GetProgress()));
+            progressText.setText(String.valueOf(Math.round(j.GetProgress() * 100.0)/100.0));
             stk.addView(tbrow);
         }
     }
@@ -143,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateLocalCapacity(double toThis) {
         TextView textView = (TextView) findViewById(R.id.LCapInput);
-        textView.setText((Double.toString(toThis)));
+        textView.setText((Double.toString(Math.round(toThis * 100.0)/100.0)));
     }
 
     public void increaseJobsPerSecond (View view){

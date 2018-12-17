@@ -87,7 +87,7 @@ public class DisasterNetwork {
     void TransferJobs () { // Transfers jobs from devices to local center
         for (int i = 0; i < jobsTransferring.size(); i++) {
             Job j = jobsTransferring.get(i);
-            j.channel.TransferData(j);
+            j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
                 j.progress = 0;
                 jobsTransferring.remove(j);
@@ -150,9 +150,9 @@ public class DisasterNetwork {
         deviceList.add(lowPriority);
     }
     void CreateChannels () {
-        Channel c1 = new Channel(10, 1);
-        Channel c2 = new Channel(5, 1);
-        Channel c3 = new Channel(2, 1);
+        Channel c1 = new Channel(10, channelId++);
+        Channel c2 = new Channel(5, channelId++);
+        Channel c3 = new Channel(2, channelId++);
         channelPool.offer(c1);
         channelPool.offer(c2);
         channelPool.offer(c3);
