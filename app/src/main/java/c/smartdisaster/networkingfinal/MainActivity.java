@@ -71,13 +71,13 @@ public class MainActivity extends AppCompatActivity {
     public void countIn1(View view){
         //
         counter1++;
-        showValue1.setText(Integer.toString(counter));
+        showValue1.setText(Integer.toString(counter1));
     }
     public void countDe1(View view){
         if (counter1 <= 0)
             return;
         counter1--;
-        showValue1.setText(Integer.toString(counter));
+        showValue1.setText(Integer.toString(counter1));
     }
     public void init() {
 
