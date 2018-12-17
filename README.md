@@ -7,9 +7,9 @@ THE PROBLEM & APPROACH:
 
   Devices of differing priority levels are randomly chosen every second to generate a Job. These jobs occupy a pool until a channel is available to transmit them. Channels have varying bandwidths and are also contained in a pool. We always allocate the best channels (highest bandwidth) to the highest priority job (lowest priority id = highest priority job) in the pool using priority queue structures.
 
-  After transmission, jobs are ready for computation. There exist two centers in our cloud network capable of computation. One is the local center, the other called the remote center. The local center has limited compute capacity, and divides up its compute power among all jobs currently being computed. The remote center has no limit on compute power based on the number of jobs being computed, and we allocate a set amount of compute to EVERY job, regardless of how many jobs are being computed at the local center. Since the local center has limited compute capacity, we tolerate a compute per job of 3.33 at any point in time. We set the compute power of the local center to be 10. So at any point in time the local center can only compute at most 3 jobs. 
+  After transmission, jobs are ready for computation. There exist two centers in our cloud network capable of computation. One is the local center, the other called the remote center. The local center has limited compute capacity, and divides up its compute power among all jobs currently being computed at that location. The remote center has no limit on compute power based on the number of jobs being computed, and we allocate a set amount of compute to EVERY job, regardless of how many jobs are being computed at the remote center. Since the local center has limited compute capacity, we tolerate a compute per job of 3.33 at any point in time. We set the compute power of the local center to be 10. So at any point in time the local center can only compute at most 3 jobs. 
 
-  What happens to the other jobs that arrive after the first 3? Jobs that arrive after the minimum compute per job threshold has been reached are sent through a high speed channel we call the remote channel. This incurs a time penalty of course, as another network transfer must be made to send the job to the remote center. Once at the remote center, the job is allocated the remote center's compute power every second and computation is complete.
+  What happens to the other jobs that arrive after the first 3? Jobs that arrive after the minimum compute per job threshold has been reached are sent through a high speed channel we call the remote channel. This incurs a time penalty of course, as another network transfer must be made to send the job to the remote center. The remote channel can support multiple transfers at once. Once at the remote center, the job is allocated the remote center's compute power every second and computation is complete.
 
 INSTRUCTIONS TO RUN:
 
@@ -35,10 +35,10 @@ Finding the code:
   Android studio utilizes activity files that handle onClick and update events that we use to display our backend logic.
     MainActivity.java
   Our Backend logic classes:
-    Channel.java
+    Channel.java 
     CPU.java // used for local center
     Device.java
-    DisasterNetwork.java
+    DisasterNetwork.java // Wrapper class that contains all network/compute objects & variables
     Job.java
     RemoteCenter.java // inherits from CPU
     
