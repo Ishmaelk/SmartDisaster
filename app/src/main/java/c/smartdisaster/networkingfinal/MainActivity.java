@@ -15,12 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    ProgressBar prg;
-    int Pstatus = 0;
     TextView showValue,showValue1,showValue2;
     int counter=0,counter1=0;
-
-    private Handler mHandler=new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         showValue.setText(Integer.toString(counter));
     }
     public void countDe(View view){
+        if (counter <= 0)
+            return;
         counter--;
         showValue.setText(Integer.toString(counter));
     }
@@ -76,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         showValue1.setText(Integer.toString(counter));
     }
     public void countDe1(View view){
+        if (counter1 <= 0)
+            return;
         counter1--;
         showValue1.setText(Integer.toString(counter));
     }
