@@ -16,16 +16,24 @@ INSTRUCTIONS TO RUN:
   Download and install android studio, then allow android studio to update entirely. This process takes a lot of time as android studio is a large program.
 
   Download the project found here on github and open the project folder in android studio.
+  
   After android studio properly syncs the project:
+  
     1) click on the green "Play" button (sideways arrow) at the top of the IDE
+    
     2) Select Create a new virtual device in the popup and select Android TV (720p) API 28
+    
     3) click ok and another popup containing a virtualized device will appear that will display the app.
 
 USING THE APP:
+
   By default, one job per second is generated, this variable can be controlled via the increase and decrease buttons on the right side of the screen.
+  
   The number of channels can also be altered. Similarly, use the button dials on the left side of the screen.
   On the far left, a text labeled local center contains the compute per job calculation of the local center. This can only take on values of 10, 5, and 3.33.
+  
   A table on the upper part of the screen displays relevant network information, such as job id, device id, priority, state (waiting, transferring, interrupted, computing, completed), network time, compute time, location (job pool, channel, local center, remote center), and progress.
+  
   A pause button is also implemented to allow the user to see the entire table without changes being applied every second
 
 Finding the code:
