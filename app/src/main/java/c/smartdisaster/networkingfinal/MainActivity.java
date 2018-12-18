@@ -17,18 +17,22 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    // Display Variables //
     TableLayout stk;
     TextView showValue,showValue1,showValue2;
     Button pauseButton;
 
+    // Network Variables //
     DisasterNetwork network;
     CPU localCenter;
     RemoteCenter remoteCenter;
 
+    // Update handler variables //
     android.os.Handler handler;
     Runnable runnable;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { // initializes variables
         super.onCreate(savedInstanceState);
         showValue = null;
         showValue2 = null;
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    // Populates the table with active job information | called in onResume () //
     public void init (ArrayList<Job> activeJobs) {
 
         String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "    STATE    ",
@@ -130,10 +135,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // onClick method for pause button //
     public void pauseHandler (View view) {
         network.paused = !network.paused;
         String text = network.paused ? "Unpause" : "Pause";
         pauseButton.setText(text);
+    }
+
+    // Updates compute per job display | called in onResume () //
+    public void updateLocalCapacity(double toThis) {
+        TextView textView = (TextView) findViewById(R.id.LCapInput);
+        textView.setText((Double.toString(Math.round(toThis * 100.0)/100.0)));
+    }
+
+    // On click method to increase jobsPerSecond //
+    public void increaseJobsPerSecond (View view){
+        network.jobsPerSecond++;
+        showValue1.setText(Integer.toString(network.jobsPerSecond));
+    }
+    // On click method to decrease jobsPerSecond //
+    public void decreaseJobsPerSecond(View view){
+        if (network.jobsPerSecond <= 0)
+            return;
+        network.jobsPerSecond--;
+        showValue1.setText(Integer.toString(network.jobsPerSecond));
+    }
+    // On click method to increase numberOfChannels //
+    public void increaseNumChannels(View view){
+        network.CreateChannel();
+        showValue.setText(Integer.toString(network.numAvailableChannels));
+    }
+    // On click method to decrease numberOfChannels //
+    public void decreaseNumChannels(View view){
+        if (network.numAvailableChannels <= 0)
+            return;
+        network.DestroyChannel();
+        showValue.setText(Integer.toString(network.numAvailableChannels));
     }
 
     public TextView createAndFormatTextView (TableRow row) {
@@ -142,33 +179,6 @@ public class MainActivity extends AppCompatActivity {
         text.setGravity(Gravity.CENTER);
         row.addView(text);
         return text;
-    }
-
-
-    public void updateLocalCapacity(double toThis) {
-        TextView textView = (TextView) findViewById(R.id.LCapInput);
-        textView.setText((Double.toString(Math.round(toThis * 100.0)/100.0)));
-    }
-
-    public void increaseJobsPerSecond (View view){
-        network.jobsPerSecond++;
-        showValue1.setText(Integer.toString(network.jobsPerSecond));
-    }
-    public void decreaseJobsPerSecond(View view){
-        if (network.jobsPerSecond <= 0)
-            return;
-        network.jobsPerSecond--;
-        showValue1.setText(Integer.toString(network.jobsPerSecond));
-    }
-    public void increaseNumChannels(View view){
-        network.CreateChannel();
-        showValue.setText(Integer.toString(network.numAvailableChannels));
-    }
-    public void decreaseNumChannels(View view){
-        if (network.numAvailableChannels <= 0)
-            return;
-        network.DestroyChannel();
-        showValue.setText(Integer.toString(network.numAvailableChannels));
     }
 
     public void outputData () {

@@ -41,7 +41,8 @@ public class CPU {
         remoteConnection = new Channel(50, -1);
     }
 
-    public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
+    // adds job to job list or transfer list depending on CPU power
+    public void AddJob (Job j) {
         if ( GetComputePerJob() < minPower) {
             j.progress = 0;
             j.state = "Transferring";
@@ -55,7 +56,8 @@ public class CPU {
         }
     }
 
-    void TransferToRemote () { // transfers to remote center | only used by the localCenter c.smartdisaster.smartdisasternew.CPU object
+    // Transfers jobs to remote center if computePerJob is too low on arrival //
+    void TransferToRemote () {
         for (int i = 0; i < transferringJobs.size(); i++) {
             Job j = transferringJobs.get(i);
             j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
@@ -70,7 +72,7 @@ public class CPU {
         }
     }
 
-
+    // Allocates computePerJob to all currently computing devices //
     public void Compute () {
         if (jobList.size() == 0) return;
         float computePerJob = power / jobList.size();

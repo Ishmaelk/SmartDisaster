@@ -57,12 +57,13 @@ public class DisasterNetwork {
 
     // Destroys a channel | On click event for channel dial //
     void DestroyChannel () {
-        if (channelPool.size() != 0) {
-            channelPool.poll();
+        if (channelPool.size() != 0) { // if we can destroy an unallocated channel
+            channelPool.poll(); // do it
             return;
         }
-        if (jobsTransferring.size() == 0)
-            return;
+        if (jobsTransferring.size() == 0) // if there are no allocated channels
+            return; // do nothing
+        // Otherwise find a random transferring job and interrupt it by destroying its channel //
         Random rand = new Random();
         int r = rand.nextInt(100);
         Job j = jobsTransferring.get(r % jobsTransferring.size());
@@ -72,7 +73,8 @@ public class DisasterNetwork {
         numAvailableChannels--;
     }
 
-    void GenerateJobs () { // generates jobs every second | Called in Workflow.java
+    // generates jobs every second | Called in Workflow.java
+    void GenerateJobs () {
         for (int i = 0; i < jobsPerSecond; i++) {
             Random rand = new Random();
             int deviceID = rand.nextInt(100) % deviceList.size();
