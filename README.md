@@ -33,13 +33,21 @@ Finding the code:
   From the start of the project directory go to: "app/src/main/java/c/smartdisaster/networkingfinal"
 
   Android studio utilizes activity files that handle onClick and update events that we use to display our backend logic.
+  
     MainActivity.java
+    
   Our Backend logic classes:
+  
     Channel.java 
+    
     CPU.java // used for local center
+    
     Device.java
+    
     DisasterNetwork.java // Wrapper class that contains all network/compute objects & variables
+    
     Job.java
+    
     RemoteCenter.java // inherits from CPU
   
     Logically significant functions/methods are commented as they appear
