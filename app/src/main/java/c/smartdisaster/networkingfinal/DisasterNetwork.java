@@ -1,5 +1,6 @@
 package c.smartdisaster.networkingfinal;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Random;
@@ -61,8 +62,6 @@ public class DisasterNetwork {
             channelPool.poll(); // do it
             return;
         }
-        if (jobsTransferring.size() == 0) // if there are no allocated channels
-            return; // do nothing
         // Otherwise find a random transferring job and interrupt it by destroying its channel //
         Random rand = new Random();
         int r = rand.nextInt(100);
@@ -155,6 +154,23 @@ public class DisasterNetwork {
             localCenter.transferringJobs.get(i).networkTime += interval;
         }
 
+    }
+
+    public ArrayList<Job> FilterActiveJobsByLocation(String location) {
+        ArrayList<Job> ret = new ArrayList<Job>();
+        for (int i = 0; i < activeJobs.size(); i++) {
+            Job j = activeJobs.get(i);
+            if (j.location.equals(location) && j.state != "Completed") ret.add(j);
+        } return ret;
+    }
+
+    public ArrayList<Job> GetJobPoolAsArray() {
+        ArrayList<Job> ret = new ArrayList<Job>();
+        while(!jobPool.isEmpty())
+            ret.add(jobPool.poll());
+        for (int i = 0; i < ret.size(); i++)
+            jobPool.add(ret.get(i));
+        return ret;
     }
 
     void CreateDevices () {

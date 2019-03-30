@@ -13,7 +13,7 @@ public class Device {
 
     public Job CreateJob (int jobId) { // creates job and places itself in jobPool in DisasterNetwork class
         Random rand = new Random ();
-        int size = rand.nextInt(50) + 10;
+        int size = rand.nextInt(100) + 10;
         return new Job (jobId, priority, size, "Device"+id);
     }
 

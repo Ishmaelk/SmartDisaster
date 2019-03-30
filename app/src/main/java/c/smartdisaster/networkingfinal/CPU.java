@@ -43,13 +43,19 @@ public class CPU {
 
     // adds job to job list or transfer list depending on CPU power
     public void AddJob (Job j) {
-        if ( GetComputePerJob() < minPower) {
+        if (j.totalPayLoad > 80) { // jobs that are too large will go straight to the remote center
             j.progress = 0;
             j.state = "Transferring";
             j.location = "Remote Channel";
             j.channel = remoteConnection;
             transferringJobs.add(j);
-        } else {
+        } else if ( GetComputePerJob() < minPower) { // if we are servicing too many jobs at local
+            j.progress = 0;
+            j.state = "Transferring";
+            j.location = "Remote Channel";
+            j.channel = remoteConnection;
+            transferringJobs.add(j);
+        } else { // otherwise local center can handle the task
             j.location = "Local Center";
             j.state = "Computing";
             jobList.add(j);

@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     TableLayout stk;
     TextView showValue,showValue1,showValue2;
     Button pauseButton;
-
+    Spinner filterSpinner;
     // Network Variables //
     DisasterNetwork network;
     CPU localCenter;
@@ -51,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
         updateLocalCapacity(localCenter.GetUsage());
         stk = (TableLayout) findViewById(R.id.table_main);
-        init(new ArrayList<Job>());
+        filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.filters));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterSpinner.setAdapter(adapter);
+        filterSpinner.setSelection(1);
+        populateTable();
     }
 
     @Override
@@ -67,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
                     network.LoadJobs();
                     network.TransferJobs();
                     localCenter.TransferToRemote();
+                    network.IncrementTime((delay / 1000));
+                    populateTable();
                     localCenter.Compute();
                     remoteCenter.Compute();
-                    network.IncrementTime((delay / 1000));
-                    init(network.activeJobs);
                     updateLocalCapacity(localCenter.GetComputePerJob());
 
                     if (showValue != null)
@@ -92,10 +100,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Populates the table with active job information | called in onResume () //
-    public void init (ArrayList<Job> activeJobs) {
+    public void populateTable () {
 
-        String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "    STATE    ",
-                "    Location    ", "  NETWORK TIME  ", "   COMPUTE TIME  ", "  PROGRESS  "};
+        String[] columns = new String[] {" Job ID ", "  Device  ", "  Priority  ", "     STATE     ",
+                "    Location    ", "  NETWORK TIME  ", "   COMPUTE TIME  ", "  SIZE  ",
+                "  PROGRESS  "};
+        
         stk.removeAllViews();
         stk.removeAllViewsInLayout();
         TableRow tbrow0 = new TableRow(this);
@@ -104,9 +114,24 @@ public class MainActivity extends AppCompatActivity {
             tv0.setText(columns[i]);
         } stk.addView(tbrow0);
 
-        for (int i = 0; i < activeJobs.size(); i++) {
+        String filter = filterSpinner.getSelectedItem().toString();
+        if (filter.equals("All"))
+            _populateTable(network.allJobs);
+        else if (filter.equals("Active"))
+            _populateTable(network.activeJobs);
+        else if (filter.equals("Local"))
+            _populateTable(network.FilterActiveJobsByLocation("Local Center"));
+        else if (filter.equals("Remote"))
+            _populateTable(network.FilterActiveJobsByLocation("Remote Center"));
+        else if (filter.equals("Pool"))
+            _populateTable(network.GetJobPoolAsArray());
+
+    }
+
+    void _populateTable(ArrayList<Job> jobs) {
+        for (int i = 0; i < jobs.size(); i++) {
             TableRow tbrow = new TableRow(this);
-            Job j = activeJobs.get(i);
+            Job j = jobs.get(i);
 
             TextView idText = createAndFormatTextView(tbrow);
             idText.setText(String.valueOf(j.id));
@@ -128,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
 
             TextView computeText = createAndFormatTextView(tbrow);
             computeText.setText(String.valueOf(j.computeTime));
+
+            TextView sizeText = createAndFormatTextView(tbrow);
+            sizeText.setText(String.valueOf(j.totalPayLoad));
 
             TextView progressText = createAndFormatTextView(tbrow);
             progressText.setText(String.valueOf(Math.round(j.GetProgress() * 100.0)/100.0));

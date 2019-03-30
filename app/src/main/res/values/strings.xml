@@ -16,4 +16,11 @@
     <string name="remote_center_channels_Input_Title">Remote Center Channels</string>
     <color name="white">#FFFFFF</color>
     <string name="increase">increase</string>
+    <string-array name = "filters">
+        <item> All </item>
+        <item> Active </item>
+        <item> Local </item>
+        <item> Remote </item>
+        <item> Pool </item>
+    </string-array>
 </resources>
