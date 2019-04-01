@@ -17,10 +17,12 @@ public class DisasterNetwork {
     ArrayList<Job> allJobs; // the list of all jobs, created //
     ArrayList<Channel> allChannels; // the list of all channels //
     ArrayList<Job> jobsTransferring;
-    ArrayList<Job> activeJobs;
+
+
     // Compute Variables
-    public ArrayList<Job> completedJobs;
-    CPU localCenter;
+    public static ArrayList<Job> activeJobs;
+    public static ArrayList<Job> completedJobs;
+    LocalCenter localCenter;
     RemoteCenter remoteCenter;
 
     // Network Variables //
@@ -40,10 +42,8 @@ public class DisasterNetwork {
         completedJobs = new ArrayList<Job>();
         jobPool = new PriorityQueue<Job>(5, new JobComparator());
         channelPool = new PriorityQueue<Channel>(5, new ChannelComparator());
-        localCenter = new CPU("Local Center", 10, 5);
-        remoteCenter = new RemoteCenter();
-        localCenter.network = this;
-        remoteCenter.network = this;
+        remoteCenter = new RemoteCenter(this);
+        localCenter = new LocalCenter(this);
         deviceList = new ArrayList<Device>();
         jobsTransferring = new ArrayList<Job>();
     }
@@ -64,7 +64,7 @@ public class DisasterNetwork {
         }
         // Otherwise find a random transferring job and interrupt it by destroying its channel //
         Random rand = new Random();
-        int r = rand.nextInt(100);
+        int r = rand.nextInt(1000);
         Job j = jobsTransferring.get(r % jobsTransferring.size());
         j.channel = null;
         j.state = "Interrupted";
@@ -135,12 +135,20 @@ public class DisasterNetwork {
     }
 
     void IncrementCPUTime (int interval) {
-        for (int i = 0; i < localCenter.jobList.size(); i++) {
-            localCenter.jobList.get(i).time += interval;
-            localCenter.jobList.get(i).computeTime += interval;
+        for (int i = 0; i < localCenter.cpus.size(); i++) {
+            CPU cpu = localCenter.cpus.get(i);
+            for (int j = 0; j < cpu.jobList.size(); j++) {
+                cpu.jobList.get(j).time += interval;
+                cpu.jobList.get(j).computeTime += interval;
+            }
         }
-        for (int i = 0; i < remoteCenter.jobList.size(); i++)
-            remoteCenter.jobList.get(i).computeTime += interval;
+        for (int i = 0; i < remoteCenter.cpus.size(); i++) {
+            CPU cpu = remoteCenter.cpus.get(i);
+            for (int j = 0; j < cpu.jobList.size(); j++) {
+                cpu.jobList.get(j).time += interval;
+                cpu.jobList.get(j).computeTime += interval;
+            }
+        }
 
     }
 
@@ -160,7 +168,7 @@ public class DisasterNetwork {
         ArrayList<Job> ret = new ArrayList<Job>();
         for (int i = 0; i < activeJobs.size(); i++) {
             Job j = activeJobs.get(i);
-            if (j.location.equals(location) && j.state != "Completed") ret.add(j);
+            if (j.location.contains(location) && j.state != "Completed") ret.add(j);
         } return ret;
     }
 
@@ -174,9 +182,8 @@ public class DisasterNetwork {
     }
 
     void CreateDevices () {
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 3; i++)
             deviceList.add(new Device(i, i));
-        }
     }
     void CreateChannels () {
         Channel c1 = new Channel(10, channelId++);
@@ -190,6 +197,10 @@ public class DisasterNetwork {
         allChannels.add(c3);
     }
 
+
+    /*
+    * Debugging functions: ignore
+    * */
     void PrintTransferring () {
         for (int i = 0; i < jobsTransferring.size(); i++)
             System.out.println(jobsTransferring.get(i).GetProgress());
@@ -197,8 +208,9 @@ public class DisasterNetwork {
     }
 
     void PrintComputing () {
-        for (int i = 0; i < localCenter.jobList.size(); i++)
-            System.out.println(localCenter.jobList.get(i).GetProgress());
+        for (int i = 0; i < localCenter.cpus.size(); i++)
+            for (int j = 0; j < localCenter.cpus.get(i).jobList.size(); j++)
+                System.out.println(j < localCenter.cpus.get(i).jobList.get(j).GetProgress());
         System.out.println();
     }
 
@@ -209,8 +221,11 @@ public class DisasterNetwork {
     }
 
     void PrintRemoteCompute () {
-        for (int i = 0; i < remoteCenter.jobList.size(); i++)
-            System.out.println(remoteCenter.jobList.get(i).GetProgress());
+        for (int i = 0; i < remoteCenter.cpus.size(); i++) {
+            CPU cpu = remoteCenter.cpus.get(i);
+            for (int j = 0; j < cpu.jobList.size(); j++)
+                System.out.println(cpu.jobList.get(i).GetProgress());
+        }
         System.out.println();
     }
 

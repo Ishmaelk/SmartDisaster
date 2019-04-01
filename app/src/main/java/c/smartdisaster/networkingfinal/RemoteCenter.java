@@ -1,33 +1,43 @@
 package c.smartdisaster.networkingfinal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class RemoteCenter extends CPU {
+public class RemoteCenter extends ComputeCenter {
 
-    RemoteCenter () {
-        jobList = new ArrayList<Job>();
+
+
+    RemoteCenter (DisasterNetwork d_network) {
+        super(d_network);
         name = "Remote Center";
-        power = 20;
-        minPower = -1;
+        cpus = new ArrayList<CPU>(Arrays.asList(
+                new CPU("CPU1", 25),
+                new CPU("CPU2", 25)));
+        transferringJobs = new ArrayList<Job>();
     }
 
     public void AddJob (Job j) { // adds job to job list or transfer list depending on CPU power
-        j.location = "Remote Center";
-        jobList.add(j);
+        int index = cpuIndex % cpus.size();
+        j.location = "Remote Center"+Integer.toString(index);
+        cpus.get(index).jobList.add(j);
+        cpuIndex++;
     }
 
     // Exactly like CPU Compute, but does not divide compute power among number of jobs //
-    public void Compute () {
-        if (jobList.size() == 0) return;
-        float computePerJob = power;
-        for (int i = 0; i < jobList.size(); i++) {
-            Job j = jobList.get(i);
-            j.progress = (int) Math.min(j.progress + computePerJob, j.totalPayLoad);
-            if (j.progress >= j.totalPayLoad) {
-                j.state = "Completed";
-                network.completedJobs.add (j);
-                network.activeJobs.remove(i);
-                jobList.remove(i);
+    public void ComputeJobs () {
+        for (int i = 0; i < cpus.size(); i++) {
+            CPU cpu = cpus.get(i);
+            if (cpu.jobList.size() == 0) return;
+            float computePerJob = cpu.power;
+            for (int k = 0; k < cpu.jobList.size(); k++) {
+                Job j = cpu.jobList.get(k);
+                j.progress = (int) Math.min(j.progress + computePerJob, j.totalPayLoad);
+                if (j.progress >= j.totalPayLoad) {
+                    j.state = "Completed";
+                    DisasterNetwork.completedJobs.add(j);
+                    DisasterNetwork.activeJobs.remove(j);
+                    cpu.jobList.remove(j);
+                }
             }
         }
     }

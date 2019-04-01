@@ -7,11 +7,8 @@ public class CPU {
     float power;
     float minPower; //  the minimum computePerJob this CPU is willing to tolerated
 
-    Channel remoteConnection; // connection to remote center | only used by localCenter class
-    DisasterNetwork network;
     RemoteCenter remoteCenter; // reference to remote center object //
     ArrayList<Job> jobList; // the list of all jobs being computed at this CPI //
-    ArrayList<Job> transferringJobs; // the jobs being transferred to remote //
 
 
     // Default Constructor //
@@ -19,8 +16,6 @@ public class CPU {
         power = 100;
         minPower = 10;
         jobList = new ArrayList<Job>();
-        transferringJobs = new ArrayList<Job>();
-        remoteConnection = new Channel(50, -1);
     }
 
     CPU (String n, float p) {
@@ -28,8 +23,6 @@ public class CPU {
         power = p;
         minPower = 5;
         jobList = new ArrayList<Job>();
-        transferringJobs = new ArrayList<Job>();
-        remoteConnection = new Channel(50, -1);
     }
 
     CPU (String n, float p, float m) {
@@ -37,45 +30,6 @@ public class CPU {
         power = p;
         minPower = m;
         jobList = new ArrayList<Job>();
-        transferringJobs = new ArrayList<Job>();
-        remoteConnection = new Channel(50, -1);
-    }
-
-    // adds job to job list or transfer list depending on CPU power
-    public void AddJob (Job j) {
-        if (j.totalPayLoad > 80) { // jobs that are too large will go straight to the remote center
-            j.progress = 0;
-            j.state = "Transferring";
-            j.location = "Remote Channel";
-            j.channel = remoteConnection;
-            transferringJobs.add(j);
-        } else if ( GetComputePerJob() < minPower) { // if we are servicing too many jobs at local
-            j.progress = 0;
-            j.state = "Transferring";
-            j.location = "Remote Channel";
-            j.channel = remoteConnection;
-            transferringJobs.add(j);
-        } else { // otherwise local center can handle the task
-            j.location = "Local Center";
-            j.state = "Computing";
-            jobList.add(j);
-        }
-    }
-
-    // Transfers jobs to remote center if computePerJob is too low on arrival //
-    void TransferToRemote () {
-        for (int i = 0; i < transferringJobs.size(); i++) {
-            Job j = transferringJobs.get(i);
-            j.progress = Math.min(j.progress + j.channel.bandwidth, j.totalPayLoad);
-            if (j.progress >= j.totalPayLoad) {
-                j.progress = 0;
-                j.state = "Computing";
-                j.location = "Remote Center";
-                j.channel = null;
-                transferringJobs.remove(i);
-                remoteCenter.AddJob(j);
-            }
-        }
     }
 
     // Allocates computePerJob to all currently computing devices //
@@ -87,11 +41,15 @@ public class CPU {
             j.progress = (int) Math.min(j.progress + computePerJob, j.totalPayLoad);
             if (j.progress >= j.totalPayLoad) {
                 j.state = "Completed";
-                network.completedJobs.add (j);
-                network.activeJobs.remove(i);
-                jobList.remove(i);
+                DisasterNetwork.completedJobs.add (j);
+                DisasterNetwork.activeJobs.remove(j);
+                jobList.remove(j);
             }
         }
+    }
+
+    boolean CanTake() {
+        return GetComputePerJob() < minPower ? false : true;
     }
 
     float GetComputePerJob () {

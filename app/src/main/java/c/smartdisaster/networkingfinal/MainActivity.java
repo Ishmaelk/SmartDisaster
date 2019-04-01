@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner filterSpinner;
     // Network Variables //
     DisasterNetwork network;
-    CPU localCenter;
+    LocalCenter localCenter;
     RemoteCenter remoteCenter;
 
     // Update handler variables //
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         showValue1=(TextView) findViewById(R.id.LCapacityNum2);
         pauseButton = (Button) findViewById(R.id.pauseButton);
 
-        updateLocalCapacity(localCenter.GetUsage());
+        //updateLocalCapacity(localCenter.GetUsage());
         stk = (TableLayout) findViewById(R.id.table_main);
         filterSpinner = (Spinner) findViewById(R.id.filterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
@@ -77,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
                     localCenter.TransferToRemote();
                     network.IncrementTime((delay / 1000));
                     populateTable();
-                    localCenter.Compute();
-                    remoteCenter.Compute();
-                    updateLocalCapacity(localCenter.GetComputePerJob());
+                    localCenter.ComputeJobs();
+                    remoteCenter.ComputeJobs();
+                    //updateLocalCapacity(localCenter.GetComputePerJob());
 
                     if (showValue != null)
                         showValue.setText("    " + Integer.toString(network.numAvailableChannels));
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         return text;
     }
 
-    public void outputData () {
+    /*public void outputData () {
         System.out.println("\n Printing jobs \n");
         network.PrintJobs();
         System.out.println("\n Printing Channels \n");
@@ -223,6 +223,6 @@ public class MainActivity extends AppCompatActivity {
         network.PrintRemoteTransfer();
         System.out.println("\n Printing Remote Compute \n");
         network.PrintRemoteCompute();
-    }
+    }*/
 
 }
