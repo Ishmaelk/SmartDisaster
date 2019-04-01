@@ -62,6 +62,7 @@ public class DisasterNetwork {
             channelPool.poll(); // do it
             return;
         }
+        if (jobsTransferring.size() == 0) return;
         // Otherwise find a random transferring job and interrupt it by destroying its channel //
         Random rand = new Random();
         int r = rand.nextInt(1000);

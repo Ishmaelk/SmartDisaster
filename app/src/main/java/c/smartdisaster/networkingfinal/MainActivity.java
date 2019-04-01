@@ -21,7 +21,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     // Display Variables //
     TableLayout stk;
-    TextView showValue,showValue1,showValue2;
+    TextView channelsValue,jobsValue,localCPUsValue, remoteCPUsValue,
+    localCPUPowerValue, remoteCPUPowerValue;
     Button pauseButton;
     Spinner filterSpinner;
     // Network Variables //
@@ -36,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) { // initializes variables
         super.onCreate(savedInstanceState);
-        showValue = null;
-        showValue2 = null;
+
         handler = new Handler();
         network = new DisasterNetwork ();
         localCenter = network.localCenter;
@@ -47,8 +47,12 @@ public class MainActivity extends AppCompatActivity {
         network.CreateChannels();
         setContentView(R.layout.activity_main);
         LayoutInflater inflater = getLayoutInflater();
-        showValue=(TextView) findViewById(R.id.LCapacityNum);
-        showValue1=(TextView) findViewById(R.id.LCapacityNum2);
+        channelsValue=(TextView) findViewById(R.id.LCapacityNum);
+        jobsValue=(TextView) findViewById(R.id.LCapacityNum2);
+        localCPUsValue = (TextView)findViewById(R.id.numLocalCPUs);
+        remoteCPUsValue = (TextView)findViewById(R.id.numRemoteCPUs);
+        localCPUPowerValue = (TextView)findViewById(R.id.localCPUPower);
+        remoteCPUPowerValue = (TextView)findViewById(R.id.remoteCPUPower);
         pauseButton = (Button) findViewById(R.id.pauseButton);
 
         //updateLocalCapacity(localCenter.GetUsage());
@@ -81,10 +85,18 @@ public class MainActivity extends AppCompatActivity {
                     remoteCenter.ComputeJobs();
                     //updateLocalCapacity(localCenter.GetComputePerJob());
 
-                    if (showValue != null)
-                        showValue.setText("    " + Integer.toString(network.numAvailableChannels));
-                    if (showValue2 != null)
-                        showValue2.setText("   " + Integer.toString(network.jobsPerSecond));
+                    if (channelsValue != null)
+                        channelsValue.setText("    " + Integer.toString(network.numAvailableChannels));
+                    if (jobsValue != null)
+                        jobsValue.setText("   " + Integer.toString(network.jobsPerSecond));
+                    if (localCPUsValue != null)
+                        localCPUsValue.setText(Integer.toString(localCenter.cpus.size()));
+                    if (remoteCPUsValue != null)
+                        remoteCPUsValue.setText(Integer.toString(remoteCenter.cpus.size()));
+                    if (localCPUPowerValue != null)
+                        localCPUPowerValue.setText(Integer.toString((int) localCenter.cpus.get(0).power));
+                    if (remoteCPUPowerValue != null)
+                        remoteCPUPowerValue.setText(Integer.toString((int) remoteCenter.cpus.get(0).power));
                 }
                 handler.postDelayed(runnable, delay);
 
@@ -171,34 +183,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Updates compute per job display | called in onResume () //
-    public void updateLocalCapacity(double toThis) {
+    /*public void updateLocalCapacity(double toThis) {
         TextView textView = (TextView) findViewById(R.id.LCapInput);
         textView.setText((Double.toString(Math.round(toThis * 100.0)/100.0)));
+    }*/
+
+    public void increaseLocalCPUs(View view) {
+        localCenter.AddCPU();
+    }
+
+    public void decreaseLocalCPUs(View view) {
+        localCenter.RemoveCPU();
+    }
+
+    public void increaseRemoteCPUs(View view) {
+        remoteCenter.AddCPU();
+    }
+
+    public void decreaseRemoteCPUs(View view) {
+        remoteCenter.RemoveCPU();
+    }
+
+    public void increaseLocalCPUPower(View view) {
+        localCenter.IncreaseCPUSpeeds();
+    }
+
+    public void decreaseLocalCPUPower(View view) {
+        localCenter.DecreaseCPUSpeeds();
+    }
+
+    public void increaseRemoteCPUPower(View view) {
+        remoteCenter.IncreaseCPUSpeeds();
+    }
+
+    public void decreaseRemoteCPUPower(View view) {
+        remoteCenter.DecreaseCPUSpeeds();
     }
 
     // On click method to increase jobsPerSecond //
     public void increaseJobsPerSecond (View view){
         network.jobsPerSecond++;
-        showValue1.setText(Integer.toString(network.jobsPerSecond));
+        jobsValue.setText(Integer.toString(network.jobsPerSecond));
     }
     // On click method to decrease jobsPerSecond //
     public void decreaseJobsPerSecond(View view){
         if (network.jobsPerSecond <= 0)
             return;
         network.jobsPerSecond--;
-        showValue1.setText(Integer.toString(network.jobsPerSecond));
+        jobsValue.setText(Integer.toString(network.jobsPerSecond));
     }
     // On click method to increase numberOfChannels //
     public void increaseNumChannels(View view){
         network.CreateChannel();
-        showValue.setText(Integer.toString(network.numAvailableChannels));
+        channelsValue.setText(Integer.toString(network.numAvailableChannels));
     }
     // On click method to decrease numberOfChannels //
     public void decreaseNumChannels(View view){
         if (network.numAvailableChannels <= 0)
             return;
         network.DestroyChannel();
-        showValue.setText(Integer.toString(network.numAvailableChannels));
+        channelsValue.setText(Integer.toString(network.numAvailableChannels));
     }
 
     public TextView createAndFormatTextView (TableRow row) {

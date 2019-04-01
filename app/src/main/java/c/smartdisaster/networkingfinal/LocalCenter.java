@@ -47,6 +47,11 @@ public class LocalCenter extends ComputeCenter {
         cpuIndex++;
     }
 
+
+    public void AddCPU () {
+        cpus.add(new CPU("CPU" + Integer.toString(cpus.size()), 10));
+    }
+
     // Transfers jobs to remote center if computePerJob is too low on arrival //
     void TransferToRemote () {
         for (int i = 0; i < transferringJobs.size(); i++) {

@@ -11,8 +11,8 @@ public class RemoteCenter extends ComputeCenter {
         super(d_network);
         name = "Remote Center";
         cpus = new ArrayList<CPU>(Arrays.asList(
-                new CPU("CPU1", 25),
-                new CPU("CPU2", 25)));
+                new CPU("CPU1", 35),
+                new CPU("CPU2", 35)));
         transferringJobs = new ArrayList<Job>();
     }
 
@@ -21,6 +21,10 @@ public class RemoteCenter extends ComputeCenter {
         j.location = "Remote Center"+Integer.toString(index);
         cpus.get(index).jobList.add(j);
         cpuIndex++;
+    }
+
+    public void AddCPU () {
+        cpus.add(new CPU("CPU" + Integer.toString(cpus.size()), 35));
     }
 
     // Exactly like CPU Compute, but does not divide compute power among number of jobs //

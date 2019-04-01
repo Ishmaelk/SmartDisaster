@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class CPU {
     String name;
     float power;
+    float startingPower;
     float minPower; //  the minimum computePerJob this CPU is willing to tolerated
 
     RemoteCenter remoteCenter; // reference to remote center object //
@@ -14,6 +15,7 @@ public class CPU {
     // Default Constructor //
     CPU () {
         power = 100;
+        startingPower = 100;
         minPower = 10;
         jobList = new ArrayList<Job>();
     }
@@ -22,12 +24,14 @@ public class CPU {
         name = n;
         power = p;
         minPower = 5;
+        startingPower = p;
         jobList = new ArrayList<Job>();
     }
 
     CPU (String n, float p, float m) {
         name = n;
         power = p;
+        startingPower = p;
         minPower = m;
         jobList = new ArrayList<Job>();
     }
@@ -45,6 +49,14 @@ public class CPU {
                 DisasterNetwork.activeJobs.remove(j);
                 jobList.remove(j);
             }
+        }
+    }
+
+    public void StopJobs() {
+        for (int i = 0; i < jobList.size(); i++) {
+            Job j = jobList.get(i);
+            jobList.remove(j);
+            DisasterNetwork.activeJobs.remove(j);
         }
     }
 
